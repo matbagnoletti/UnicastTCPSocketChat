@@ -38,11 +38,11 @@ Il progetto si compone da due classi:
 - L'entità [`Client`](src/main/java/org/tpsit/Client.java)
 - L'entità [`Server`](src/main/java/org/tpsit/Server.java)
 
-Le due, dopo una configurazione iniziale, permetteranno entrambi all'utente di poter digitare messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo di un altro Thread), messaggi che verranno stampati a video.
+Le due, dopo una configurazione iniziale, permetteranno entrambe all'utente di poter digitare messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo di un altro Thread), messaggi che verranno stampati a video.
 
 La chat termina quando uno dei due digita `exit` nella console: in questo caso verranno invocati i rispettivi metodi di chiusura degli stream (`chiudi()`).
 
-Entrambe le classi sono strutturate in modo che, nel caso in cui si verificasse improvvisamente un errore/eccezione (come ad esempio la disconnessione di una delle due entità), il programma, dopo averlo segnalato, invochera i rispettivi metodi di chiusura degli stream (`chiudi()`).
+Entrambe le classi sono strutturate in modo che, nel caso in cui si verificasse improvvisamente un errore o un'eccezione (come ad esempio la disconnessione di una delle due entità), il programma, dopo averlo segnalato, invocherà i rispettivi metodi di chiusura degli stream (`chiudi()`).
 
 ## Licenza d'uso
 Questo progetto (e tutte le sue versioni) sono rilasciate sotto la [MB General Copyleft License](LICENSE).

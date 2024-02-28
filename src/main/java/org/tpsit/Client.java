@@ -2,6 +2,7 @@ package org.tpsit;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
@@ -32,8 +33,14 @@ public class Client {
             output.write(colore + nome + RESET + " si è unito alla chat!");
             output.newLine();
             output.flush();
+
+            leggi();
+            scrivi();
+        } catch (UnknownHostException e){
+            System.out.println("Errore nella connessione al Server: controlla di aver inserito un indirizzo IP valido");
+            chiudi();
         } catch (IOException e){
-            System.err.println("Errore nella connessione al Server! Verifica di aver inserito un corretto indirizzo IP e numero di porta, e che il Server sia in ascolto: " + e.getMessage());
+            System.err.println("Errore nella creazione della socket con il Server: " + e.getMessage());
             chiudi();
         }
     }
@@ -66,20 +73,20 @@ public class Client {
      */
     public void leggi(){
         new Thread(() -> {
-            while(!socket.isClosed()){
-                try {
+            try {
+                while(!socket.isClosed()){
                     String messaggio = input.readLine();
                     if(messaggio == null || messaggio.equalsIgnoreCase("exit")){
-                        System.out.println("Chiusura chat in corso...");
+                        System.out.println("Il Server ha abbandonato la conversazione. Chiusura chat in corso...");
                         chiudi();
                         break;
                     } else {
                         System.out.println(messaggio);
                     }
-                } catch (IOException e){
-                    System.err.println("Errore in lettura: " + e.getMessage());
-                    chiudi();
                 }
+            } catch (IOException e) {
+                System.err.println("Si è verificato un errore con lo stream di input (lettura).");
+                chiudi();
             }
         }).start();
     }
@@ -127,10 +134,18 @@ public class Client {
 
         System.out.print("Inserici l'indirizzo IP del Server: ");
         String ip = scanner.nextLine();
-        System.out.print("Inserisci la porta del Server: ");
-        int porta = Integer.parseInt(scanner.nextLine());
+
+        int porta = 19065;
+        /* prevenire un'eccezione di tipo IllegalArgumentException nella creazione della socket */
+        do {
+            try {
+                System.out.print("Inserisci un numero di porta valido (0 - 65535): ");
+                porta = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.err.println("Errore: hai inserito un valore non valido.");
+            }
+        } while (porta < 0 || porta > 65535);
+
         client.connetti(ip, porta);
-        client.leggi();
-        client.scrivi();
     }
 }

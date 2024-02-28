@@ -34,6 +34,9 @@ public class Server {
 
                 String connessione = input.readLine();
                 System.out.println(connessione);
+
+                leggi();
+                scrivi();
             } else {
                 System.err.println("Impossibile creare la socket con il Client!");
                 chiudi();
@@ -85,20 +88,20 @@ public class Server {
      */
     public void leggi(){
         new Thread(() -> {
-            while(!clientSocket.isClosed() || !serverSocket.isClosed()){
-                try {
+            try {
+                while(!clientSocket.isClosed() && !serverSocket.isClosed()){
                     String messaggio = input.readLine();
                     if(messaggio == null || messaggio.equalsIgnoreCase("exit")){
-                        System.out.println("Chiusura chat in corso...");
+                        System.out.println("Il Client ha abbandonato la conversazione. Chiusura chat in corso...");
                         chiudi();
                         break;
                     } else {
                         System.out.println(messaggio);
                     }
-                } catch (IOException e){
-                    System.err.println("Errore in lettura: " + e.getMessage());
-                    chiudi();
                 }
+            } catch (IOException e) {
+                System.err.println("Si è verificato un errore con lo stream di input (lettura).");
+                chiudi();
             }
         }).start();
     }
@@ -129,11 +132,17 @@ public class Server {
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Inserisci il numero di porta in cui avviare il Server: ");
-        int porta = Integer.parseInt(scanner.nextLine());
+        int porta = 19065;
+        /* prevenire un'eccezione di tipo IllegalArgumentException nella creazione della socket */
+        do {
+            try {
+                System.out.print("Inserisci un numero di porta valido in cui avviare il Server (0 - 65535): ");
+                porta = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.err.println("Errore: hai inserito un valore non valido.");
+            }
+        } while (porta < 0 || porta > 65535);
 
         Server server = new Server(porta);
-        server.leggi();
-        server.scrivi();
     }
 }

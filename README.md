@@ -37,11 +37,11 @@ gradle --version
 Il progetto si compone da quattro classi:
 
 - Nel package `chat.client`:
-  - L'entità [`Client`](src/main/java/org/tpsit/Client.java)
+  - L'entità [`Client`](src/main/java/chat/client/Client.java)
   - [`MainClient`](src/main/java/chat/client/MainClient.java), la classe di avvio del Client
 
 - Nel package `chat.server`:
-  - L'entità [`Server`](src/main/java/org/tpsit/Server.java)
+  - L'entità [`Server`](src/main/java/chat/server/Server.java)
   - [`MainServer`](src/main/java/chat/server/MainServer.java), la classe di avvio del Server
 
 Le due entità, dopo una configurazione iniziale, permetteranno entrambe all'utente di poter digitare messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo di un altro Thread), messaggi che verranno stampati a video.

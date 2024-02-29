@@ -30,15 +30,21 @@ gradle --version
      1. Naviga nella root del progetto
      2. Esegui il built del progetto: `gradle build`
      3. Identifica il file **jar** nella cartella `/build/libs/`
-     3. Esegui il Server: `java -cp build/libs/<nome-del-file-jar>.jar org.tpsit.Server`
-     4. Esegui il Client in una finestra: `java -cp build/libs/<nome-del-file-jar>.jar org.tpsit.Client`
+     3. Esegui il Server: `java -cp build/libs/<nome-del-file-jar>.jar chat.server.Server`
+     4. Esegui il Client in un'altra finestra: `java -cp build/libs/<nome-del-file-jar>.jar chat.client.Client`
      
 ## Struttura e funzionamento
-Il progetto si compone da due classi:
-- L'entità [`Client`](src/main/java/org/tpsit/Client.java)
-- L'entità [`Server`](src/main/java/org/tpsit/Server.java)
+Il progetto si compone da quattro classi:
 
-Le due, dopo una configurazione iniziale, permetteranno entrambe all'utente di poter digitare messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo di un altro Thread), messaggi che verranno stampati a video.
+- Nel package `chat.client`:
+  - L'entità [`Client`](src/main/java/org/tpsit/Client.java)
+  - [`MainClient`](src/main/java/chat/client/MainClient.java), la classe di avvio del Client
+
+- Nel package `chat.server`:
+  - L'entità [`Server`](src/main/java/org/tpsit/Server.java)
+  - [`MainServer`](src/main/java/chat/server/MainServer.java), la classe di avvio del Server
+
+Le due entità, dopo una configurazione iniziale, permetteranno entrambe all'utente di poter digitare messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo di un altro Thread), messaggi che verranno stampati a video.
 
 La chat termina quando uno dei due digita `exit` nella console: in questo caso verranno invocati i rispettivi metodi di chiusura degli stream (`chiudi()`).
 

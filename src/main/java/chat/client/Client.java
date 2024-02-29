@@ -1,4 +1,4 @@
-package org.tpsit;
+package chat.client;
 
 import java.io.*;
 import java.net.Socket;
@@ -54,6 +54,9 @@ public class Client {
             try {
                 String messaggio = scanner.nextLine();
                 if(messaggio.equalsIgnoreCase("exit")){
+                    output.write("exit");
+                    output.newLine();
+                    output.flush();
                     System.out.println("Chiusura chat in corso...");
                     chiudi();
                 } else {
@@ -85,7 +88,9 @@ public class Client {
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Si è verificato un errore con lo stream di input (lettura).");
+                if(!e.getMessage().equals("Socket closed")){
+                    System.err.println("Si è verificato un errore con lo stream di input (lettura): " + e.getMessage());
+                }
                 chiudi();
             }
         }).start();
@@ -109,43 +114,5 @@ public class Client {
             System.err.println("Errore nella chiusura delle risorse: " + e.getMessage());
         }
         System.exit(0);
-    }
-
-    public static void main(String[] args){
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Inserisci il tuo username: ");
-        String nome = scanner.nextLine();
-
-        String codColore = "\033[0m";
-        do {
-            System.out.print("Quale colore vuoi utilizzare per la chat? (R: rosso - G: giallo - V: verde - B: blu) ");
-            String colore = scanner.nextLine();
-            colore = colore.toUpperCase();
-            switch (colore) {
-                case "R" -> codColore = "\033[31m";
-                case "G" -> codColore = "\033[33m";
-                case "V" -> codColore = "\033[32m";
-                case "B" -> codColore = "\033[34m";
-                default -> System.out.println("La lettera inserita non è valida! Riprova.");
-            }
-        } while (codColore.equals("\033[0m"));
-        Client client = new Client(nome, codColore);
-
-        System.out.print("Inserici l'indirizzo IP del Server: ");
-        String ip = scanner.nextLine();
-
-        int porta = 19065;
-        /* prevenire un'eccezione di tipo IllegalArgumentException nella creazione della socket */
-        do {
-            try {
-                System.out.print("Inserisci un numero di porta valido (0 - 65535): ");
-                porta = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.err.println("Errore: hai inserito un valore non valido.");
-            }
-        } while (porta < 0 || porta > 65535);
-
-        client.connetti(ip, porta);
     }
 }

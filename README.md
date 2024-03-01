@@ -12,8 +12,8 @@
 Applicazione Java che utilizza le socket per implementare una comunicazione TCP unicast tra Client e Server.
 
 ## Requisiti
-- [JDK](https://www.oracle.com/it/java/technologies/downloads/) (v8 o superiore) installato.
-- [Gradle](https://gradle.org/install/) (v8.6) installato.
+- [JDK](https://www.oracle.com/it/java/technologies/downloads/) (v8 o superiore)
+- [Gradle](https://gradle.org/install/) (v8.6)
 
 È possibile visualizzare le versioni già presenti sul proprio dispositivo mediante i seguenti comandi:
 ```
@@ -24,12 +24,12 @@ gradle --version
 ## Installazione e utilizzo
 1. Scaricare il file compresso del progetto
 2. Estrarre il progetto
-3. Eseguire il Server e il Client.
+3. Eseguire il Server e il Client separatamente:
    - Tramite IDE
    - Tramite terminale:
      1. Naviga nella root del progetto
      2. Esegui il built del progetto: `gradle build`
-     3. Identifica il file **jar** nella cartella `/build/libs/`
+     3. Identifica il file `jar` nella directory `/build/libs/`
      3. Esegui il Server: `java -cp build/libs/<nome-del-file-jar>.jar chat.server.Server`
      4. Esegui il Client in un'altra finestra: `java -cp build/libs/<nome-del-file-jar>.jar chat.client.Client`
      

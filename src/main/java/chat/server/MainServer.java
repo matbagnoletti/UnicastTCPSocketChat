@@ -3,7 +3,7 @@ package chat.server;
 import java.util.Scanner;
 
 public class MainServer {
-    public synchronized static void main(String[] args){
+    public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
 
         int porta = 19065;

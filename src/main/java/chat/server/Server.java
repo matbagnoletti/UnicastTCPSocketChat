@@ -1,6 +1,7 @@
 package chat.server;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -42,7 +43,10 @@ public class Server {
                 chiudi();
             }
 
-        } catch (IOException e){
+        } catch (BindException e) {
+            System.err.println("Errore: non è possibile mettere il Server in ascolto sulla porta " + porta);
+            chiudi();
+        } catch (IOException e) {
             System.err.println("Errore nell'apertura del Server: " + e.getMessage());
             chiudi();
         }

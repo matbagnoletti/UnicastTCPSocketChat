@@ -8,110 +8,79 @@ import java.util.Scanner;
 
 public class Server {
     private ServerSocket serverSocket;
-    private Socket clientSocket;
     private final int porta;
-    private final String colore = "\033[35m";
-    private final String RESET = "\033[0m";
     /**
-     * stream di output verso il Client
-     */
-    private BufferedWriter output;
-    /**
-     * stream di input dal Client
+     * Stream di input dal Client
      */
     private BufferedReader input;
     private final Scanner scanner;
+    private boolean attivo;
+    private static final String ERRORE = "\033[31m";
+    private static final String RESET = "\033[0m";
     public Server(int porta){
         this.porta = porta;
         this.scanner = new Scanner(System.in);
+        this.attivo = true;
         try {
             serverSocket = new ServerSocket(this.porta);
             System.out.println("Server avviato e in ascolto sulla porta " + porta + "!");
-            this.clientSocket = attendi();
+            scrivi();
+            
+            while(attivo){
+                Socket clientSocket = attendi();
 
-            if(clientSocket != null){
-                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-
-                String connessione = input.readLine();
-                System.out.println(connessione);
-
-                leggi();
-                scrivi();
-            } else {
-                System.err.println("Impossibile creare la socket con il Client!");
-                chiudi();
+                if(clientSocket != null){
+                    input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    String username = input.readLine();
+                    Chat chat = new Chat(clientSocket, username);
+                    chat.start();
+                }
             }
 
         } catch (BindException e) {
-            System.err.println("Errore: non è possibile mettere il Server in ascolto sulla porta " + porta);
+            System.err.println(ERRORE + "Errore: non e' possibile mettere il Server in ascolto sulla porta " + porta + RESET);
             chiudi();
         } catch (IOException e) {
-            System.err.println("Errore nell'apertura del Server: " + e.getMessage());
+            System.err.println(ERRORE + "Errore nell'apertura del Server: " + e.getMessage() + RESET);
             chiudi();
         }
     }
 
     /**
-     * metodo per l'accettazione della connessione con il Client e l'apertura degli stream
+     * Metodo per l'accettazione della connessione con il Client e l'apertura degli stream
      * @return la socket con il Client
      */
     public Socket attendi(){
         try {
             return serverSocket.accept();
         } catch (IOException e){
-            System.out.println("Errore nell'attesa di connessioni: " + e.getMessage());
+            if(attivo){
+                System.err.println(ERRORE + "Errore nell'attesa di connessioni: " + e.getMessage() + RESET);
+            }
             return null;
         }
     }
 
     /**
-     * metodo per la lettura da tastiera dei messaggi e l'invio al Client
+     * Metodo per la lettura da tastiera dei messaggi e l'invio al Client
      */
     public void scrivi(){
-        System.out.println("Server pronto all'invio di messaggi! Digita 'exit' per terminare.");
-        while(!clientSocket.isClosed() && !serverSocket.isClosed()){
-            try {
-                String messaggio = scanner.nextLine();
-                if(messaggio.equalsIgnoreCase("exit")){
-                    output.write("exit");
-                    output.newLine();
-                    output.flush();
-                    System.out.println("Chiusura chat in corso...");
-                    chiudi();
-                } else {
-                    output.write(colore + "SERVER" + RESET + ": " + messaggio);
-                    output.newLine();
-                    output.flush();
-                }
-            } catch (IOException e){
-                System.err.println("Errore in scrittura: " + e.getMessage());
-                chiudi();
-            }
-        }
-    }
-
-    /**
-     * metodo che, mediante un thread, rimane in ascolto di messaggi dal Client e li stampa a video
-     */
-    public void leggi(){
         new Thread(() -> {
-            try {
-                while(!clientSocket.isClosed() && !serverSocket.isClosed()){
-                    String messaggio = input.readLine();
-                    if(messaggio == null || messaggio.equalsIgnoreCase("exit")){
-                        System.out.println("Il Client ha abbandonato la conversazione. Chiusura chat in corso...");
+            System.out.println("Server pronto all'invio di messaggi! Digita '" + ERRORE +  "exit" + RESET + "' per terminare.");
+            System.out.println("\n------------------------------------< Chat >------------------------------------\n");
+            while(!serverSocket.isClosed()){
+                try {
+                    String[] messaggio = scanner.nextLine().split("->");
+                    String payload = messaggio[0].trim();
+                    if(payload.equals("exit")){
                         chiudi();
-                        break;
                     } else {
-                        System.out.println(messaggio);
+                        String username = messaggio[1].trim();
+                        Chat.scrivi(username, payload);
                     }
+                } catch (ArrayIndexOutOfBoundsException e){
+                    System.err.println(ERRORE + "Input invalido: atteso <payload> -> <username>" + RESET);
                 }
-            } catch (IOException e) {
-                if(!e.getMessage().equals("Socket closed")){
-                    System.err.println("Si è verificato un errore con lo stream di input (lettura): " + e.getMessage());
-                }
-                chiudi();
             }
         }).start();
     }
@@ -119,22 +88,14 @@ public class Server {
     /**
      * metodo di chiusura della socket e degli stream
      */
-    public void chiudi(){
+    public synchronized void chiudi(){
+        attivo = false;
         try {
-            if(clientSocket != null && !clientSocket.isClosed()){
-                clientSocket.close();
-            }
             if(serverSocket != null && !serverSocket.isClosed()){
                 serverSocket.close();
             }
-            if(input != null){
-                input.close();
-            }
-            if(output != null){
-                output.close();
-            }
         } catch (IOException e){
-            System.err.println("Errore nella chiusura delle risorse: " + e.getMessage());
+            System.err.println(ERRORE + "Errore nella chiusura delle risorse: " + e.getMessage() + RESET);
         }
         System.exit(0);
     }

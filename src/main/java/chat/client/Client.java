@@ -8,14 +8,15 @@ import java.util.Scanner;
 public class Client {
     private final String nome;
     private final String colore;
-    private final String RESET = "\033[0m";
+    private static final String ERRORE = "\033[31m";
+    private static final String RESET = "\033[0m";
     private Socket socket;
     /**
-     * stream di output verso il Server
+     * Stream di output verso il Server
      */
     private BufferedWriter output;
     /**
-     * stream di input dal Server
+     * Stream di input dal Server
      */
     private BufferedReader input;
     private final Scanner scanner;
@@ -30,26 +31,27 @@ public class Client {
             output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            output.write(colore + nome + RESET + " si è unito alla chat!");
+            output.write(nome);
             output.newLine();
             output.flush();
 
             leggi();
             scrivi();
         } catch (UnknownHostException e){
-            System.out.println("Errore nella connessione al Server: controlla di aver inserito un indirizzo IP valido");
+            System.err.println(ERRORE + "Errore nella connessione al Server: controlla di aver inserito un indirizzo IP valido" + RESET);
             chiudi();
         } catch (IOException e){
-            System.err.println("Errore nella creazione della socket con il Server: " + e.getMessage());
+            System.err.println(ERRORE + "Errore nella creazione della socket con il Server: " + e.getMessage() + RESET);
             chiudi();
         }
     }
 
     /**
-     * metodo per la lettura da tastiera dei messaggi e l'invio al Server
+     * Metodo per la lettura da tastiera dei messaggi e l'invio al Server
      */
     public void scrivi(){
-        System.out.println("Client pronto all'invio di messaggi! Digita 'exit' per terminare.");
+        System.out.println("Client pronto all'invio di messaggi! Digita '" + ERRORE +  "exit" + RESET + "' per terminare.");
+        System.out.println("\n------------------------------------< Chat >------------------------------------\n");
         while(!socket.isClosed()){
             try {
                 String messaggio = scanner.nextLine();
@@ -65,14 +67,14 @@ public class Client {
                     output.flush();
                 }
             } catch (IOException e){
-                System.err.println("Errore in scrittura: " + e.getMessage());
+                System.err.println(ERRORE + "Errore in scrittura: " + e.getMessage() + RESET);
                 chiudi();
             }
         }
     }
 
     /**
-     * metodo che, mediante un thread, rimane in ascolto di messaggi dal Server e li stampa a video
+     * Metodo che, mediante un thread, rimane in ascolto di messaggi dal Server e li stampa a video
      */
     public void leggi(){
         new Thread(() -> {
@@ -89,7 +91,7 @@ public class Client {
                 }
             } catch (IOException e) {
                 if(!e.getMessage().equals("Socket closed")){
-                    System.err.println("Si è verificato un errore con lo stream di input (lettura): " + e.getMessage());
+                    System.err.println(ERRORE + "Connessione persa con il Server: " + e.getMessage() + RESET);
                 }
                 chiudi();
             }
@@ -97,21 +99,15 @@ public class Client {
     }
 
     /**
-     * metodo di chiusura della socket e degli stream
+     * Metodo di chiusura della socket e degli stream
      */
-    public void chiudi(){
+    public synchronized void chiudi(){
         try {
             if(socket != null && !socket.isClosed()){
                 socket.close();
             }
-            if(input != null){
-                input.close();
-            }
-            if(output != null){
-                output.close();
-            }
         } catch (IOException e){
-            System.err.println("Errore nella chiusura delle risorse: " + e.getMessage());
+            System.err.println(ERRORE + "Errore nella chiusura delle risorse: " + e.getMessage() + RESET);
         }
         System.exit(0);
     }

@@ -2,6 +2,9 @@ package chat.client;
 
 import java.util.Scanner;
 
+/**
+ * Classe di avvio di un oggetto Client
+ */
 public class MainClient {
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);

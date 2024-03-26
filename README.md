@@ -9,7 +9,7 @@
 </p>
 
 ## Descrizione
-Applicazione Java che utilizza le socket per implementare una comunicazione TCP unicast tra Client e Server.
+Applicazione Java che utilizza le socket per implementare una comunicazione TCP unicast tra più Client e un Server.
 
 ## Requisiti
 - [JDK](https://www.oracle.com/it/java/technologies/downloads/) (v8 o superiore)
@@ -30,8 +30,8 @@ gradle --version
      1. Naviga nella root del progetto
      2. Esegui il built del progetto: `gradle build`
      3. Identifica il file `jar` nella directory `/build/libs/`
-     3. Esegui il Server: `java -cp build/libs/<nome-del-file-jar>.jar chat.server.Server`
-     4. Esegui il Client in un'altra finestra: `java -cp build/libs/<nome-del-file-jar>.jar chat.client.Client`
+     4. Esegui il Server: `java -cp build/libs/<nome-del-file-jar>.jar chat.server.MainServer`
+     5. Esegui il Client in un'altra finestra: `java -cp build/libs/<nome-del-file-jar>.jar chat.client.MainClient`
      
 ## Struttura e funzionamento
 Il progetto si compone da quattro classi:
@@ -43,8 +43,16 @@ Il progetto si compone da quattro classi:
 - Nel package `chat.server`:
   - L'entità [`Server`](src/main/java/chat/server/Server.java)
   - [`MainServer`](src/main/java/chat/server/MainServer.java), la classe di avvio del Server
+  - [`Chat`](src/main/java/chat/server/Chat.java), la classe che si occupa di gestire i diversi Client connessi al Server
 
-Le due entità, dopo una configurazione iniziale, permetteranno entrambe all'utente di poter digitare messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo di un altro Thread), messaggi che verranno stampati a video.
+Le due entità, dopo una configurazione iniziale, permetteranno all'utente di poter scrivere messaggi da inviare all'altra entità e ricevere, contemporaneamente (tramite l'utilizzo dei thread), messaggi che verranno stampati a video.
+
+Il Server permette a più Client di comunicare con lui, ma i Client potranno comunicare solo con il Server, essendo una comunicazione unicast.
+
+Lato-Server per poter comunicare con uno dei possibili Client connessi sarà necessario scrivere:
+```text
+<payload> -> <usernameDestinatario>
+```
 
 La chat termina quando uno dei due digita `exit` nella console: in questo caso verranno invocati i rispettivi metodi di chiusura degli stream (`chiudi()`).
 

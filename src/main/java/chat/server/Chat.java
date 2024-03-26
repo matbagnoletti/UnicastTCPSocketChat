@@ -4,15 +4,58 @@ import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Classe di gestione dei Client
+ */
 public class Chat extends Thread{
+
+    /**
+     * Elenco degli utenti connessi al Server
+     */
     private static CopyOnWriteArrayList<Chat> utenti = new CopyOnWriteArrayList<>();
+
+    /**
+     * La dataSocket derivata dalla connessione del Client al Server
+     */
     private final Socket socket;
+
+    /**
+     * Lo username del Client
+     */
     private final String username;
+
+    /**
+     * Colore ASCII del Server
+     */
     private static final String COLORE = "\033[35m";
+
+    /**
+     * Colore ASCII rosso
+     */
     private static final String ERRORE = "\033[31m";
+
+    /**
+     * Colore ASCII di reset
+     */
     private static final String RESET = "\033[0m";
-    private BufferedReader input;
+    
+    /**
+     * Stream di output verso il Server
+     * @see BufferedWriter
+     */
     private BufferedWriter output;
+
+    /**
+     * Stream di input dal Server
+     * @see BufferedReader
+     */
+    private BufferedReader input;
+
+    /**
+     * Costruttore
+     * @param socket la dataSocket derivata dalla connessione del Client al Server
+     * @param username lo username del Client
+     */
     public Chat(Socket socket, String username){
         this.socket = socket;
         this.username = username;
@@ -45,7 +88,10 @@ public class Chat extends Thread{
     public synchronized void rimuoviUtente(Chat chat){
         utenti.remove(chat);
     }
-    
+
+    /**
+     * Metodo per l'invio dei messaggi ai Client
+     */
     public static synchronized void scrivi(String username, String msg){
         if(!utenti.isEmpty()){
             boolean trovato = false;
@@ -71,6 +117,9 @@ public class Chat extends Thread{
         }
     }
 
+    /**
+     * Metodo per la lettura dei messaggi dal Client
+     */
     public void leggi(){
         new Thread(() -> {
             try {
@@ -93,6 +142,9 @@ public class Chat extends Thread{
         }).start();
     }
 
+    /**
+     * Metodo di chiusura della socket e degli stream
+     */
     public void chiudi(){
         try {
             if(socket != null && !socket.isClosed()){

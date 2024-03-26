@@ -6,17 +6,53 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * Classe che rappresenta il Server nella comunicazione secondo l'architettura C/S
+ */
 public class Server {
+    
+    /**
+     * La connectionSocket del Server
+     * @see ServerSocket
+     */
     private ServerSocket serverSocket;
+    
+    /**
+     * Il numero di porta su cui il Server si mette in ascolto
+     */
     private final int porta;
+    
     /**
      * Stream di input dal Client
+     * @see BufferedReader
      */
     private BufferedReader input;
+
+    /**
+     * Scanner per l'input dell'utente
+     * @see Scanner
+     */
     private final Scanner scanner;
+
+    /**
+     * Variabile booleana che indica se il Server è attivo
+     */
     private boolean attivo;
+
+    /**
+     * Codice ASCII colore rosso
+     */
     private static final String ERRORE = "\033[31m";
+
+    /**
+     * Codice ASCII colore di reset
+     */
     private static final String RESET = "\033[0m";
+
+    /**
+     * Costruttore
+     * @param porta il numero di porta su cui il Server è in ascolto
+     */
     public Server(int porta){
         this.porta = porta;
         this.scanner = new Scanner(System.in);
@@ -86,7 +122,7 @@ public class Server {
     }
 
     /**
-     * metodo di chiusura della socket e degli stream
+     * Metodo di chiusura della socket e degli stream
      */
     public synchronized void chiudi(){
         attivo = false;

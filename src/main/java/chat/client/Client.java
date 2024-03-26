@@ -5,26 +5,71 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+/**
+ * Classe che rappresenta un Client nella comunicazione secondo l'architettura C/S
+ */
 public class Client {
+    
+    /**
+     * Lo username dell'utente
+     */
     private final String nome;
+    
+    /**
+     * Il codice ASCII del colore scelto dall'utente
+     */
     private final String colore;
+    
+    /**
+     * Codice ASCII colore rosso
+     */
     private static final String ERRORE = "\033[31m";
+    
+    /**
+     * Codice ASCII di reset
+     */
     private static final String RESET = "\033[0m";
+    
+    /**
+     * La dataSocket del Client
+     * @see Socket
+     */
     private Socket socket;
+    
     /**
      * Stream di output verso il Server
+     * @see BufferedWriter
      */
     private BufferedWriter output;
+    
     /**
      * Stream di input dal Server
+     * @see BufferedReader
      */
     private BufferedReader input;
+    
+    /**
+     * Scanner per l'input dell'utente
+     * @see Scanner
+     */
     private final Scanner scanner;
+
+    /**
+     * Costruttore
+     * @param nomeDefault lo username del Client
+     * @param coloreDefault il colore del Client
+     */
     public Client(String nomeDefault, String coloreDefault){
         this.nome = nomeDefault;
         this.colore = coloreDefault;
         scanner = new Scanner(System.in);
     }
+
+    /**
+     * Metodo di connessione al Server
+     * @param nomeServer l'indirizzo del Server
+     * @param portaServer la porta del Server
+     */
     public void connetti(String nomeServer, int portaServer){
         try {
             socket = new Socket(nomeServer, portaServer);

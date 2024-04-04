@@ -28,7 +28,7 @@ gradle --version
    - Tramite IDE
    - Tramite terminale:
      1. Naviga nella root del progetto
-     2. Esegui il built del progetto: `gradle build`
+     2. Esegui la build del progetto: `gradle build`
      3. Identifica il file `jar` nella directory `/build/libs/`
      4. Esegui il Server: `java -cp build/libs/<nome-del-file-jar>.jar chat.server.MainServer`
      5. Esegui il Client in un'altra finestra: `java -cp build/libs/<nome-del-file-jar>.jar chat.client.MainClient`
